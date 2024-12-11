@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -86,13 +87,13 @@ WSGI_APPLICATION = "task.wsgi.application"
 #     }
 # }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'taskmanagement',
-        'USER': 'taskuser',
-        'PASSWORD': 'securepassword123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "taskmanagement",
+        "USER": "taskuser",
+        "PASSWORD": "securepassword123",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 

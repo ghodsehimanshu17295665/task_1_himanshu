@@ -12,7 +12,6 @@ from .views import (
     TaskUpdateView,
 )
 
-
 urlpatterns = [
     path("", Home.as_view(), name="home_page"),
     path("signup/page/", SignupView.as_view(), name="signup"),
@@ -26,6 +25,6 @@ urlpatterns = [
         TaskDetailView.as_view(),
         name="add_comments",
     ),
-    path("update/task/<int:pk>/", TaskUpdateView.as_view(), name="updatetask"),
-
+    path("update/task/<int:pk>/", TaskUpdateView.as_view(), name="updatetask")
+  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

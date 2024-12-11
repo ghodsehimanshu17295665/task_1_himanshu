@@ -1,6 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User, Task, Comment
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+
+from .models import Comment, Task, User
 
 
 class SignupForms(UserCreationForm):
