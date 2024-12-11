@@ -26,5 +26,4 @@ urlpatterns = [
         name="add_comments",
     ),
     path("update/task/<int:pk>/", TaskUpdateView.as_view(), name="updatetask")
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
