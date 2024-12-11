@@ -3,6 +3,8 @@ from django.views.generic import TemplateView, View
 from .forms import SignupForms, LoginForms, TaskForm, CommentForm
 from django.contrib.auth import login, logout, authenticate
 from .models import User, Task, Comment
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # Home page
@@ -56,9 +58,7 @@ class AssignTaskView(View):
     def get(self, request):
         users = User.objects.exclude(id=request.user.id)
         form = TaskForm()
-        return render(
-            request, "assign_task.html", {"form": form, "users": users}
-        )
+        return render(request, "assign_task.html", {"form": form, "users": users})
 
     def post(self, request):
         form = TaskForm(request.POST)
@@ -66,18 +66,58 @@ class AssignTaskView(View):
             task = form.save(commit=False)
             task.creator = request.user
             task.save()
+
+            # Send email
+            assignee = task.assignee
+            subject = f"New Task Assigned: {task.title}"
+            message = f"You have been assigned a new task: {task.title}\nDescription: {task.description}\nPriority: {task.get_priority_display()}\nDue_Date: {task.due_date}"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [assignee.email],
+                fail_silently=False,
+            )
             return redirect("tasklist")
         else:
             return render(request, "assign_task.html", {"form": form})
+
+
+# class TaskListView(View):
+#     template_name = "tasklist.html"
+
+#     def get(self, request):
+#         task = Task.objects.all()
+#         context = {"task": task}
+#         return render(request, self.template_name, context=context)
 
 
 class TaskListView(View):
     template_name = "tasklist.html"
 
     def get(self, request):
+        users = User.objects.all()
         task = Task.objects.all()
-        context = {"task": task}
-        return render(request, self.template_name, context=context)
+
+        assignee = request.GET.get("assignee")
+        status = request.GET.get("status")
+        due_date = request.GET.get("due_date")
+
+        if assignee:
+            task = task.filter(assignee__id=assignee)
+        if status:
+            task = task.filter(status=status)
+        if due_date:
+            task = task.filter(due_date=due_date)
+
+        context = {
+            "users": users,
+            "task": task,
+            "assignee": assignee,
+            "status": status,
+            "due_date": due_date,
+        }
+        return render(request, self.template_name, context)
 
 
 class TaskUpdateView(View):
@@ -88,9 +128,7 @@ class TaskUpdateView(View):
         if task:
             users = User.objects.exclude(id=request.user.id)
             form = TaskForm(instance=task)
-            return render(
-                request, self.template_name, {"form": form, "users": users}
-            )
+            return render(request, self.template_name, {"form": form, "users": users})
 
     def post(self, request, pk):
         task = Task.objects.filter(id=pk).first()
@@ -120,10 +158,17 @@ class TaskDetailView(View):
             comment.user = request.user
             comment.task = task
             comment.save()
-            return redirect("detailtask")
+            return redirect("tasklist")
         comments = Comment.objects.filter(task=task)
         return render(
             request,
             "taskdetail.html",
             {"task": task, "comments": comments, "form": form},
         )
+
+
+class TaskDeleteView(View):
+    def get(self, request, pk):
+        task = Task.objects.filter(id=pk)
+        task.delete()
+        return redirect("tasklist")
