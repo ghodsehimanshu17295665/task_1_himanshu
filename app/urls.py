@@ -10,6 +10,7 @@ from .views import (
     AssignTaskView,
     TaskDetailView,
     TaskUpdateView,
+    TaskDeleteView,
 )
 
 urlpatterns = [
@@ -25,5 +26,7 @@ urlpatterns = [
         TaskDetailView.as_view(),
         name="add_comments",
     ),
-    path("update/task/<int:pk>/", TaskUpdateView.as_view(), name="updatetask")
+    path("update/task/<int:pk>/", TaskUpdateView.as_view(), name="updatetask"),
+    path("delete/task/<int:pk>/", TaskDeleteView.as_view(), name="deletetask"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
