@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,6 +34,40 @@
     <div class="container my-5">
         <h1 class="text-center mb-4">Task List</h1>
 
+        <!-- Search Form -->
+        <div class="mb-4">
+            <form method="GET" action="">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="assignee">Assignee</label>
+                        <select name="assignee" class="form-control">
+                            <option value="">All</option>
+                            {% for user in users %}
+                                <option value="{{ user.id }}" {% if user.id == assignee %}selected{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status">Status</label>
+                        <select name="status" class="form-control">
+                            <option value="">All</option>
+                            <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Completed" {% if status == 'Completed' %}selected{% endif %}>Completed</option>
+                            <option value="InProcessing" {% if status == 'InProcessing' %}selected{% endif %}>In Processing</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="due_date">Due Date</label>
+                        <input type="date" name="due_date" class="form-control" value="{{ due_date }}">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary mt-4">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
         <!-- Display Task List -->
         {% if task %}
         <div class="table-responsive">
@@ -60,8 +93,7 @@
                         <td>
                             <a href="{% url 'detailtask' task.id %}" class="btn btn-warning btn-sm">View</a>
                             <a href="{% url 'updatetask' task.id %}" class="btn btn-primary btn-sm">Update</a>
-                            {% comment %} <a href="#" class="btn btn-primary btn-sm">Update</a>
-                            <a href="#" class="btn btn-danger btn-sm">Delete</a> {% endcomment %}
+                            <a href="{% url 'deletetask' task.id %}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
